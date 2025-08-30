@@ -1,5 +1,9 @@
 // Minimal coverflow carousel + wheel/swipe + flip + overlay timing
-const OVERLAY_DELAY_IMAGE = 1200;
+const IS_PHONE = window.matchMedia('(max-width: 480px)').matches;
+const SLOT = IS_PHONE ? 90 : 140;   // px between slots
+const MAX_SIDE = 2;                 // show 2 each side of center (5 total)
+const HIDE_BEYOND = 3;              // hard-hide beyond ±3 (7 in DOM paint)
+const OVERLAY_DELAY_IMAGE = IS_PHONE ? 700 : 1200;
 
 const state = {
   deck: [],            // from JSON
@@ -15,11 +19,7 @@ const els = {
 
 const track = document.querySelector('#carousel .carousel__track');
 
-const IS_PHONE = window.matchMedia('(max-width: 480px)').matches;
-const SLOT = IS_PHONE ? 90 : 140;   // px between slots
-const MAX_SIDE = 2;                 // show 2 each side of center (5 total)
-const HIDE_BEYOND = 3;              // hard-hide beyond ±3 (7 in DOM paint)
-const OVERLAY_DELAY_IMAGE = IS_PHONE ? 700 : 1200;
+
 
 
 init();
