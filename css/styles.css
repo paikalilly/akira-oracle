@@ -13,9 +13,12 @@ main { display:grid; gap:10px; padding:10px; }
 
 /* Carousel */
 .carousel {
-  position:relative;
-  height: min(78vh, calc(92vw * 5/3));   /* was calc(min(92vw,360px)*5/3) */
-  overflow:hidden;
+  position: relative;
+  /* height equals card height + vertical padding */
+  height: calc((clamp(160px, 60vw, 300px) * 5/3) + 16vh);
+  padding-block: 8vh;                 /* space above/below the cards */
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 .carousel__track { position:absolute; inset:0; touch-action:pan-y; }
 
@@ -24,7 +27,7 @@ main { display:grid; gap:10px; padding:10px; }
 
 .card {
   position:absolute; left:50%; top:50%;
-  width:min(92vw, 360px); aspect-ratio:3/5;
+  width:clamp(160px, 60vw, 300px); aspect-ratio:3/5;
   transform: translate(-50%,-50%);
   border-radius:var(--radius);
   cursor:pointer;
@@ -118,6 +121,13 @@ main { display:grid; gap:10px; padding:10px; }
   .card__face { box-shadow:0 6px 18px rgba(0,0,0,.40) }
 }
 
+@media (max-width: 480px){
+  .card { width: clamp(150px, 56vw, 260px); }
+  .carousel {
+    height: calc((clamp(150px, 56vw, 260px) * 5/3) + 20vh);
+    padding-block: 10vh;
+  }
+  
 /* Ensure correct 3D painting order across browsers */
 /* .card { transform-style: preserve-3d; perspective: 1200px; } Removed this as it's now in .card directly */
 
