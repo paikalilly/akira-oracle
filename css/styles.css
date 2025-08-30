@@ -37,14 +37,27 @@ main { display:grid; gap:10px; padding:10px; }
 }
 .card__face {
   position:absolute; inset:0;
-  backface-visibility:hidden;
   border-radius:var(--radius);
   overflow:hidden;
   box-shadow:0 10px 30px rgba(0,0,0,.45);
+  /* Default: hide backface */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
-.card__face--back  { transform: rotateY(0); background:#111; }
-.card__face--front { transform: rotateY(180deg); pointer-events:auto; }
-.card.card--flipped .card__inner { transform: rotateY(180deg); }
+.card__face--back  {
+  transform: rotateY(0);
+  background:#111;
+}
+.card__face--front {
+  transform: rotateY(180deg) translateZ(1px); /* translateZ(1px) helps z-fighting */
+  pointer-events:auto;
+  /* Make front face visible when it's rotated into view */
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+}
+.card.card--flipped .card__inner {
+  transform: rotateY(180deg);
+}
 
 /* Media */
 .card__media { width:100%; height:100%; object-fit:cover; display:block; }
@@ -81,17 +94,17 @@ main { display:grid; gap:10px; padding:10px; }
 }
 
 /* Ensure correct 3D painting order across browsers */
-.card { transform-style: preserve-3d; perspective: 1200px; }
+/* .card { transform-style: preserve-3d; perspective: 1200px; } Removed this as it's now in .card directly */
 
-/* Hide backfaces everywhere, including the <img> */
-.card__face, .card__media { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+/* Hide backfaces everywhere, including the <img> - This is now more specific */
+/* .card__face, .card__media { backface-visibility: hidden; -webkit-backface-visibility: hidden; } Removed */
 
 /* Put the front face slightly in front to avoid z-fighting */
-.card__face--front { transform: rotateY(180deg) translateZ(1px); }
+/* .card__face--front { transform: rotateY(180deg) translateZ(1px); } Integrated into the main .card__face--front block */
 
 /* The flip uses the inner wrapper; keep it 3D */
-.card__inner { transform-style: preserve-3d; transition: transform .6s ease; }
-.card.card--flipped .card__inner { transform: rotateY(180deg); }
+/* .card__inner { transform-style: preserve-3d; transition: transform .6s ease; } Integrated into the main .card__inner block */
+/* .card.card--flipped .card__inner { transform: rotateY(180deg); } Integrated into the main .card.card--flipped .card__inner block */
 
 /* (Optional) Safari/WebKit quirk guard */
 @supports (-webkit-hyphens: none) {
