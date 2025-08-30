@@ -1,22 +1,313 @@
 [
   {
-    "id": "sunset-2019",
-    "title": "Hold the horizon",
-    "prompt": "Breathe. Name the one true thing in front of you.",
-    "type": "image",
-    "src": "images/sample1.jpg",
-    "poster": "images/sample1.jpg",
-    "link": "https://instagram.com/",
-    "tags": ["calm","perspective"]
+    "title": "Doubt is proof you are stretching beyond the known.",
+    "src": "images/card1.jpg",
+    "link": "https://www.instagram.com/reel/Crx4FLRsmCU/?igsh=MXVzc2x3Y3c0ZHRjZQ=="
   },
   {
-    "id": "ocean-clip",
-    "title": "Let the body lead",
-    "prompt": "Relax your jaw. Drop your shoulders. Breathe.",
-    "type": "video",
-    "src": "videos/sample1.mp4",
-    "poster": "videos/sample1.jpg",
-    "link": "https://instagram.com/",
-    "tags": ["soothe"]
+    "title": "The question you carry is already shaping the answer.",
+    "src": "images/card2.jpg"
+  },
+  {
+    "title": "The body whispers before it screams.",
+    "src": "images/card3.jpg",
+    "link": "https://www.instagram.com/p/CUrvXgJj8Ad/"
+  },
+  {
+    "title": "Even still water moves beneath the surface.",
+    "src": "images/card4.jpg",
+    "link": "https://www.instagram.com/reel/CotpvXqMXAw/?igsh=cjFlMmlvdnlsaWdk"
+  },
+  {
+    "title": "Call back the parts of yourself you abandoned.",
+    "src": "images/card5.jpg",
+    "link": "https://www.instagram.com/p/CuGJ6PMp1yy/?igsh=YXo0cGRqYnFkang1"
+  },
+  {
+    "title": "You are not late; time bends around you.",
+    "src": "images/card6.jpg",
+    "link": "https://www.instagram.com/reel/Crggo7eAazM/?igsh=cjF3NWx1bHVvbjd1"
+  },
+  {
+    "title": "Your ancestors dreamed you into being.",
+    "src": "images/card7.jpg",
+    "link": "https://www.instagram.com/reel/CrwKN_Iqp1v/?igsh=MWNkc3d5MDh5d3dnYg=="
+  },
+  {
+    "title": "Release the story that no longer feeds you.",
+    "src": "images/card8.jpg",
+    "link": "https://www.instagram.com/reel/CrbrbD5OP-L/?igsh=ZnZ1ZnVsd2tjdDlr"
+  },
+  {
+    "title": "The answer will arrive in a form you do not yet recognize.",
+    "src": "images/card9.jpg",
+    "link": "https://www.instagram.com/reel/Cr3zzLlgQlx/?igsh=cnBwNTQxMWVtNXgw"
+  },
+  {
+    "title": "Anger shows you where you long for justice.",
+    "src": "images/card10.jpg",
+    "link": "https://www.instagram.com/reel/CtMbSEztlNz/?igsh=ZWhsMzcyMng0azcy"
+  },
+  {
+    "title": "Every storm clears space for growth.",
+    "src": "images/card11.jpg",
+    "link": "https://www.instagram.com/reel/Ctt_xkouRz-/?igsh=dWNtMmF3OG0wOTRu"
+  },
+  {
+    "title": "Put your hands to the work; the vision lives through them.",
+    "src": "images/card12.jpg",
+    "link": "https://www.instagram.com/reel/CuaomXdNmgF/?igsh=dWJvcDNwM3Vobms="
+  },
+  {
+    "title": "The future has not yet decided—it listens to you.",
+    "src": "images/card13.jpg",
+    "link": "https://www.instagram.com/p/C-dRbHvIIxR/?igsh=MWw1djEzejJoaWk0MQ%3D%3D&img_index=3"
+  },
+  {
+    "title": "You are not broken; you are unfolding.",
+    "src": "images/card14.jpg",
+    "link": "https://www.instagram.com/p/BJdJmXuBbhx/?igsh=ZDdncTd2a2puZ3pz"
+  },
+  {
+    "title": "Desire is compass—follow where it points.",
+    "src": "images/card15.jpg"
+  },
+  {
+    "title": "Kinship is survival, not luxury.",
+    "src": "images/card16.jpg",
+    "link": "https://www.instagram.com/reel/C-BOBhyO6G_/?igsh=MTVxd2RrMmtwcXN1Zg%3D%3D"
+  },
+  {
+    "title": "Step sideways; the hidden door is never on the main road.",
+    "src": "images/card17.jpg",
+    "link": "https://www.instagram.com/reel/C3a57j9oE6W/?igsh=MXZlY3Brb25nZTJwaA=="
+  },
+  {
+    "title": "Patience is not waiting; it is ripening.",
+    "src": "images/card18.jpg",
+    "link": "https://www.instagram.com/reel/Co8tuKiAlyi/?igsh=MWR0NWs3Nmw4dXIyOQ=="
+  },
+  {
+    "title": "The smallest flame defeats the dark.",
+    "src": "images/card19.jpg",
+    "link": "https://www.instagram.com/reel/C5Qk10vLjSJ/?igsh=amV3ZmZjaXQ1cmZ2"
+  },
+  {
+    "title": "You are already forgiven.",
+    "src": "images/card20.jpg",
+    "link": "https://www.instagram.com/p/C8U6rLjophQ/?igsh=MWltMjk0b3c0OWxxcw%3D%3D"
+  },
+  {
+    "title": "Nothing is wasted—each stumble fertilizes the ground.",
+    "src": "images/card21.jpg",
+    "link": "https://www.instagram.com/reel/CtNs891AZvq/?igsh=MWxwYzFzdDU5MGJ2"
+  },
+  {
+    "title": "You cannot lose what is truly yours.",
+    "src": "images/card22.jpg",
+    "link": "https://www.instagram.com/reel/C3jmlW0SWB7/?igsh=MTdlMnJqb3F1M2l6OQ%3D%3D"
+  },
+  {
+    "title": "Stars remind you that you belong to something vast.",
+    "src": "images/card23.jpg",
+    "link": "https://www.instagram.com/p/C2NZknvKnJL/?igsh=N2Mxdm05Z3B3NWt2"
+  },
+  {
+    "title": "Let endings end; they are doorways disguised.",
+    "src": "images/card24.jpg",
+    "link": "https://www.instagram.com/p/C8nTcLwTwLB/?igsh=MWFlNDJ5dDVzOW1qaA%3D%3D"
+  },
+  {
+    "title": "Begin before you are ready; readiness comes in motion.",
+    "src": "images/card25.jpg",
+    "link": "https://www.instagram.com/reel/C3T5xGiOUnX/?igsh=MTQ0anVoMHVnb2l1aQ%3D%3D"
+  },
+  {
+    "title": "Rest is not retreat, it is preparation.",
+    "src": "images/card26.jpg",
+    "link": "https://www.instagram.com/reel/CqqdSLDOYbv/?igsh=MTF3bDAxcHhnd2Vycw%3D%3D"
+  },
+  {
+    "title": "Let ambition serve not ego, but future kin.",
+    "src": "images/card27.jpg",
+    "link": "https://www.instagram.com/reel/Cop9fbnIp0o/?igsh=bzI0ZmozaG02eTc1"
+  },
+  {
+    "title": "The river carves stone by steady insistence.",
+    "src": "images/card28.jpg",
+    "link": "https://www.instagram.com/reel/CvfxBMDIX3B/?igsh=MW5sNmN0N25pd2ZrZg%3D%3D"
+  },
+  {
+    "title": "What you fear most is already dissolving.",
+    "src": "images/card29.jpg",
+    "link": "https://www.instagram.com/reel/C3twCSsNcXm/?igsh=eXFoYzVoeXEyb3hy"
+  },
+  {
+    "title": "Ask for help; the circle strengthens when joined.",
+    "src": "images/card30.jpg",
+    "link": "https://www.instagram.com/reel/CvUvMe4BSSg/?igsh=MW9pNXU2bHZ2cDhjbA%3D%3D"
+  },
+  {
+    "title": "Silence is an answer, too.",
+    "src": "images/card31.jpg",
+    "link": "https://www.instagram.com/reel/CzAX8lRrC2L/?igsh=MThvbG4weTk0Nnhx"
+  },
+  {
+    "title": "Boldness births paths politeness cannot.",
+    "src": "images/card32.jpg",
+    "link": "https://www.instagram.com/reel/Cysnk33uUNi/?igsh=Y2t2aHQyd2d1cHpy"
+  },
+  {
+    "title": "You are allowed to want more.",
+    "src": "images/card33.jpg",
+    "link": "https://www.instagram.com/reel/CvSsaC-Rtyk/?igsh=MWZrNHFjN2ZwNzQ0dg=="
+  },
+  {
+    "title": "The earth teaches: cycles of bloom and fall are sacred.",
+    "src": "images/card34.jpg",
+    "link": "https://www.instagram.com/reel/CgR55LnlUBl/?igsh=MThiM2I1Mml1NzZteA=="
+  },
+  {
+    "title": "Plant roots where you stand, then reach higher.",
+    "src": "images/card35.jpg",
+    "link": "https://www.instagram.com/reel/C4m3x6pPNeR/?igsh=MWVpMXQ1a2l1N3ZyNg=="
+  },
+  {
+    "title": "Gratitude loosens the knots.",
+    "src": "images/card36.jpg",
+    "link": "https://www.instagram.com/reel/CzWincmuJGA/?igsh=MWNoYjVubG4wanNxZA%3D%3D"
+  },
+  {
+    "title": "Joy is an act of resistance.",
+    "src": "images/card37.jpg",
+    "link": "https://www.instagram.com/reel/CxK_YNooHLe/?igsh=cm8zbGsybGpoOTB4"
+  },
+  {
+    "title": "The fire in you was meant to move mountains.",
+    "src": "images/card38.jpg",
+    "link": "https://www.instagram.com/p/CSwVa0KpB2T/?igsh=MXF2ZHZ2cGtpdGIzcA=="
+  },
+  {
+    "title": "When everything feels heavy, carry only the moment.",
+    "src": "images/card39.jpg",
+    "link": "https://www.instagram.com/reel/C0oOIGZP8_B/?igsh=aGYwa29tYjBuc3Vh"
+  },
+  {
+    "title": "Celebrate the victories of others as your own.",
+    "src": "images/card40.jpg",
+    "link": "https://www.instagram.com/p/CwRMJqKJhSq/?igsh=MWtwZGR0cGJpNmJp"
+  },
+  {
+    "title": "Grief is love still moving.",
+    "src": "images/card41.jpg",
+    "link": "https://www.instagram.com/p/CHz3MVIgE79/?igsh=MTNvY3Nkd2QwZWh0aA=="
+  },
+  {
+    "title": "Comparison blinds you to your own treasure.",
+    "src": "images/card42.jpg"
+  },
+  {
+    "title": "The wound is the place where light negotiates entry.",
+    "src": "images/card43.jpg",
+    "link": "https://www.instagram.com/reel/C0C4tSWus8g/?igsh=MzZsOXg4ZGh6ajd6"
+  },
+  {
+    "title": "Imagine beyond yourself; build what outlives you.",
+    "src": "images/card44.jpg"
+  },
+  {
+    "title": "Your light does not dim by resting.",
+    "src": "images/card45.jpg",
+    "link": "https://www.instagram.com/reel/C2weJIXKSgA/?igsh=MWZyOXozOG9rYzlvdw%3D%3D"
+  },
+  {
+    "title": "Forgive the path for being crooked.",
+    "src": "images/card46.jpg",
+    "link": "https://www.instagram.com/reel/CqgBJvOJO7s/?igsh=amczdWE4N3E5ZjRx"
+  },
+  {
+    "title": "Shared struggle forges enduring bonds.",
+    "src": "images/card47.jpg",
+    "link": "https://www.instagram.com/reel/CtCLYhMNr2I/?igsh=MW91NW45cXZ4MTNhaw=="
+  },
+  {
+    "title": "Rest is fuel; action is proof.",
+    "src": "images/card48.jpg",
+    "link": "https://www.instagram.com/reel/CqgBJvOJO7s/?igsh=amczdWE4N3E5ZjRx"
+  },
+  {
+    "title": "Your voice belongs in the chorus, not the silence.",
+    "src": "images/card49.jpg",
+    "link": "https://www.instagram.com/reel/CqgBJvOJO7s/?igsh=amczdWE4N3E5ZjRx"
+  },
+  {
+    "title": "You do not need to earn the right to breathe.",
+    "src": "images/card50.jpg",
+    "link": "https://www.instagram.com/reel/CspZ3IKv3fa/?igsh=ZWVzbmY5anN1MHNq"
+  },
+  {
+    "title": "Dance breaks the spell of fear.",
+    "src": "images/card51.jpg",
+    "link": "https://www.instagram.com/reel/CsO9WSRIEkn/?igsh=MTNhZ3owOTM3Ymx1OQ=="
+  },
+  {
+    "title": "Act today as if your descendants are watching.",
+    "src": "images/card52.jpg",
+    "link": "https://www.instagram.com/reel/CqgBJvOJO7s/?igsh=amczdWE4N3E5ZjRx"
+  },
+  {
+    "title": "Renewal is inevitable—rise to meet it.",
+    "src": "images/card53.jpg",
+    "link": "https://www.instagram.com/reel/Cuo2guYMoQR/?igsh=cDR3dTMwNGV2YTZw"
+  },
+  {
+    "title": "Choose the gentler path; strength can be soft.",
+    "src": "images/card54.jpg",
+    "link": "https://www.instagram.com/reel/Csy5RW6rWyO/?igsh=bHZtdXJldWV1amRk"
+  },
+  {
+    "title": "Your worth is not a task to complete.",
+    "src": "images/card55.jpg",
+    "link": "https://www.instagram.com/reel/Cr6aWFFoxf_/?igsh=MTZia2QycTl3cHFlcw=="
+  },
+  {
+    "title": "Legacy is shaped in the smallest choices.",
+    "src": "images/card56.jpg",
+    "link": "https://www.instagram.com/reel/Ct1-DW6MgMt/?igsh=MWNrbnZxeHpiMXlndQ=="
+  },
+  {
+    "title": "The heart knows before the mind can explain.",
+    "src": "images/card57.jpg",
+    "link": "https://www.instagram.com/reel/Cq5uwwrPfNm/?igsh=MTQ0dnNtZTFvMXF1Yw=="
+  },
+  {
+    "title": "Every pause contains a seed.",
+    "src": "images/card58.jpg",
+    "link": "https://www.instagram.com/p/CNBDo8MpALr/?igsh=MXF6eG8yNm4zbnB0Mg=="
+  },
+  {
+    "title": "Winter’s pause is the promise of spring.",
+    "src": "images/card59.jpg",
+    "link": "https://www.instagram.com/reel/CrT-708qplI/?igsh=OGF6MHlkc3J5Z3dv"
+  },
+  {
+    "title": "Do not confuse survival with living.",
+    "src": "images/card60.jpg",
+    "link": "https://www.instagram.com/reel/Crgc-ACq4su/?igsh=NW9hNDh0dGVxYjJz"
+  },
+  {
+    "title": "Your roots are deeper than this storm.",
+    "src": "images/card61.jpg",
+    "link": "https://www.instagram.com/reel/C1jm8c0L9Zb/?igsh=ejNvNXp1eW8wcWhq"
+  },
+  {
+    "title": "Let the moon remind you of renewal.",
+    "src": "images/card62.jpg"
+  },
+  {
+    "title": "The unknown waits to honor your courage.",
+    "src": "images/card63.jpg",
+    "link": "https://www.instagram.com/reel/CrrSjxtK1yQ/?igsh=MXUwZ3M1azVzZTlsbw=="
   }
 ]
+
