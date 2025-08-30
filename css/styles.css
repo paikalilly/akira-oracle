@@ -86,13 +86,17 @@ main { display:grid; gap:10px; padding:10px; }
 
 .overlay__title { margin:0; font-size:1.35rem; }
 .overlay__prompt { display:none; } /* you’re not using prompts */
+/* top-right link icon */
 .overlay__link {
-  display:inline-block; margin-top:.6rem;
-  color:#fff; text-decoration:underline; font-weight:500;
+  position:absolute;
+  top:10px; right:10px;
+  color:#fff;
+  opacity:0.85;
+  transition:opacity .25s;
 }
-@media (min-width: 480px){
-  .overlay__title { font-size:1.55rem; }
-}
+.overlay__link:hover { opacity:1; }
+.overlay__link svg { display:block; }
+
 
 
 /* Motion accessibility */
