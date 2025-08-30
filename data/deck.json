@@ -1,0 +1,22 @@
+[
+  {
+    "id": "sunset-2019",
+    "title": "Hold the horizon",
+    "prompt": "Breathe. Name the one true thing in front of you.",
+    "type": "image",
+    "src": "images/sample1.jpg",
+    "poster": "images/sample1.jpg",
+    "link": "https://instagram.com/",
+    "tags": ["calm","perspective"]
+  },
+  {
+    "id": "ocean-clip",
+    "title": "Let the body lead",
+    "prompt": "Relax your jaw. Drop your shoulders. Breathe.",
+    "type": "video",
+    "src": "videos/sample1.mp4",
+    "poster": "videos/sample1.jpg",
+    "link": "https://instagram.com/",
+    "tags": ["soothe"]
+  }
+]
