@@ -1,18 +1,16 @@
-// Minimal coverflow carousel + wheel/swipe + flip + keep-out tray + overlay timing
+// Minimal coverflow carousel + wheel/swipe + flip + overlay timing
 const OVERLAY_DELAY_IMAGE = 1200;
 
 const state = {
   deck: [],            // from JSON
-  order: [],           // array of indexes [0..n-1] in shuffled order
-  center: 0,           // which position is centered
-  mode: "replace",     // "replace" | "no-replace"
-  drawn: new Set(),    // indexes drawn (only for no-replace)
+  order: [],           // indexes [0..n-1] in shuffled order
+  center: 0           // centered position
 };
 
 const els = {
   carousel: document.getElementById('carousel'),
   refresh: document.getElementById('refreshBtn'),
-  tpl: document.getElementById('cardTpl'),
+  tpl: document.getElementById('cardTpl')
 };
 
 const track = document.querySelector('#carousel .carousel__track');
@@ -32,21 +30,19 @@ async function init(){
 /* ---------- UI wiring ---------- */
 
 function attachUI(){
-  els.refresh.onclick = () => { reshuffle(); buildCarouselDOM(); clearTray(); };
-  els.modeToggle.onchange = () => {
-    state.mode = els.modeToggle.checked ? "no-replace" : "replace";
-    els.tray.hidden = state.mode !== "no-replace";
-  };
+  // shuffle
+  els.refresh.onclick = () => { reshuffle(); buildCarouselDOM(); };
 
-  // arrows via keyboard
+  // keyboard
   window.addEventListener('keydown', (e)=>{
     if (e.key === 'ArrowRight') centerOn(state.center + 1);
     if (e.key === 'ArrowLeft') centerOn(state.center - 1);
-    if (e.key.toLowerCase() === 'r') { reshuffle(); buildCarouselDOM(); clearTray(); }
+    if (e.key.toLowerCase() === 'r') { reshuffle(); buildCarouselDOM(); }
   });
 
-  // wheel scroll when hovering the deck
+  // wheel: scroll through cards when hovering the deck (desktop)
   els.carousel.addEventListener('wheel', (e)=>{
+    if (e.target.closest('.overlay__link')) return; // let link scroll if needed
     e.preventDefault();
     if (Math.abs(e.deltaY) < 2) return;
     centerOn(state.center + (e.deltaY > 0 ? 1 : -1));
@@ -59,7 +55,6 @@ function reshuffle(){
   const n = state.deck.length;
   state.order = shuffle(Array.from({length:n}, (_, i) => i));
   state.center = 0;
-  state.drawn.clear();
 }
 
 function buildCarouselDOM(){
@@ -69,10 +64,12 @@ function buildCarouselDOM(){
     node.dataset.idx = String(idx);
     track.appendChild(node);
   }
+
   enableSwipe(track);
-  // Fallback: if a click slips past pointer events, treat it as a tap
+
+  // Fallback: treat a plain click on the carousel as a tap
   els.carousel.onclick = (e)=>{
-    if (e.target.closest('.overlay__link')) return;
+    if (e.target.closest('.overlay__link')) return; // real link click
     const hit = document.elementFromPoint(e.clientX, e.clientY);
     const el = hit && hit.closest ? hit.closest('.card') : null;
     if (!el) return;
@@ -80,6 +77,7 @@ function buildCarouselDOM(){
     const pos = cards.indexOf(el);
     if (pos !== state.center) {
       centerOn(pos);
+      // flip next frame so the recenter transform lands
       requestAnimationFrame(()=> requestAnimationFrame(()=> handleFlip(el)));
     } else {
       handleFlip(el);
@@ -91,7 +89,6 @@ function buildCarouselDOM(){
 
 function getCard(idx){ return state.deck[idx]; }
 
-
 /* ---------- card template & flip ---------- */
 
 function cardFromTpl(card){
@@ -99,20 +96,19 @@ function cardFromTpl(card){
   const front = node.querySelector('.card__face--front');
   const overlay = node.querySelector('.card__overlay');
   const titleEl = node.querySelector('.overlay__title');
-  const promptEl = node.querySelector('.overlay__prompt');
   const linkEl = node.querySelector('.overlay__link');
 
   // content
   titleEl.textContent = card.title || '';
-  if (promptEl) promptEl.textContent = ''; // you have titles only
   if (card.link) {
     linkEl.href = card.link;
+    linkEl.target = '_blank';
+    linkEl.rel = 'noopener noreferrer';
   } else {
-    linkEl.remove(); // hide button if no link
+    linkEl.remove(); // hide icon if no link
   }
 
-  // image media
-  front.dataset.type = 'image';
+  // image media on the FRONT
   const img = document.createElement('img');
   img.className = 'card__media';
   img.loading = 'lazy';
@@ -120,47 +116,40 @@ function cardFromTpl(card){
   img.alt = '';
   front.prepend(img);
 
-  // click: center first; if already centered, flip
+  // click: center then flip (single click does both)
   node.addEventListener('click', (e)=>{
+    if (e.target.closest('.overlay__link')) return; // don't swallow the link
     const cards = [...track.querySelectorAll('.card')];
     const pos = cards.indexOf(node);
 
     if (pos !== state.center) {
       centerOn(pos);
+      requestAnimationFrame(()=> requestAnimationFrame(()=> handleFlip(node)));
       return;
     }
-
-    if (node.classList.contains('is-center') && !e.target.closest('.overlay_link')) {
-      handleFlip(node);
-    }
+    handleFlip(node);
   });
-
 
   // keyboard flip when focused
   node.addEventListener('keydown', (e)=>{
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFlip(node); }
   });
 
+  // tap the image to toggle overlay visibility after it has appeared
+  front.onclick = (e)=>{
+    if (e.target.closest('.overlay__link')) return;
+    overlay.classList.toggle('show');
+  };
+
   return node;
 }
 
 function handleFlip(cardEl){
-  const idx = Number(cardEl.dataset.idx);
   const isFlipped = cardEl.classList.contains('card--flipped');
-
   if (!isFlipped){
-    // force a layout read to ensure the next transform is committed
-    void cardEl.offsetWidth;
-
-    cardEl.classList.add('card--flipped');   // triggers the flip
+    void cardEl.offsetWidth;                 // force layout so transform commits
+    cardEl.classList.add('card--flipped');   // rotates .card__inner via CSS
     showOverlayWithDelay(cardEl);
-
-    if (state.mode === 'no-replace' && !state.drawn.has(idx)){
-      state.drawn.add(idx);
-      cardEl.classList.add('card--drawn');
-      addToTray(idx);
-      updateCounter();
-    }
   } else {
     hideOverlay(cardEl);
     cardEl.classList.remove('card--flipped');
@@ -172,32 +161,12 @@ function showOverlayWithDelay(cardEl){
   overlay.classList.remove('show');
   clearTimeout(cardEl._overlayTimer);
   cardEl._overlayTimer = setTimeout(()=> overlay.classList.add('show'), OVERLAY_DELAY_IMAGE);
-
-  const front = cardEl.querySelector('.card__face--front');
-  front.onclick = (e)=>{ if (!e.target.closest('.overlay__link')) overlay.classList.toggle('show'); };
 }
 
 function hideOverlay(cardEl){
   const overlay = cardEl.querySelector('.card__overlay');
   clearTimeout(cardEl._overlayTimer);
   overlay.classList.remove('show');
-}
-
-function addToTray(idx){
-  els.tray.hidden = false;
-  const node = cardFromTpl(getCard(idx));
-  node.classList.add('card--flipped'); // show front in tray
-  node.onclick = () => {
-    const pos = state.order.indexOf(idx);
-    centerOn(pos);
-    const main = findCardDOM(idx);
-    if (main && !main.classList.contains('card--flipped')) handleFlip(main);
-  };
-  els.tray.appendChild(node);
-}
-
-function findCardDOM(idx){
-  return track.querySelector(`.card[data-idx="${idx}"]`);
 }
 
 /* ---------- layout (5 visible slots) ---------- */
@@ -227,14 +196,6 @@ function renderPositions(){
   });
 }
 
-function centerOn(index){
-  const max = state.order.length - 1;
-  const next = clamp(index, 0, max);
-  if (next === state.center) return;
-  state.center = next;
-  renderPositions();
-}
-
 /* ---------- swipe/drag ---------- */
 
 function enableSwipe(surface){
@@ -258,6 +219,10 @@ function enableSwipe(surface){
   surface.addEventListener('pointerup', (e)=>{
     if (!dragging) return;
     dragging = false;
+
+    // let real link clicks through
+    const linkHit = document.elementFromPoint(e.clientX, e.clientY)?.closest('.overlay__link');
+    if (linkHit) return;
 
     // Treat tiny movement as a tap; find the actual card under the pointer
     if (moved < 6) {
@@ -291,3 +256,4 @@ function shuffle(a){
   return arr;
 }
 function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
