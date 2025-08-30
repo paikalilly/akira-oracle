@@ -1,12 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 500">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#1a1a1d"/><stop offset="1" stop-color="#222227"/>
-    </linearGradient>
-    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse">
-      <circle cx="7" cy="7" r="1.2" fill="#2e2e34"/>
-    </pattern>
-  </defs>
-  <rect width="100%" height="100%" fill="url(#g)"/>
-  <rect width="100%" height="100%" fill="url(#dots)" opacity=".9"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="600" viewBox="0 0 360 600">
+  <!-- background -->
+  <rect x="0" y="0" width="360" height="600" rx="24" fill="#1a1a1a"/>
+
+  <g stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Eye outline -->
+    <path d="M90 300 Q180 200 270 300 Q180 400 90 300Z"/>
+    <!-- Iris -->
+    <circle cx="180" cy="300" r="28"/>
+    <!-- Pupil -->
+    <circle cx="180" cy="300" r="12" fill="#ffffff"/>
+    <!-- Top lashes -->
+    <path d="M130 260 L125 235
+             M180 240 L180 215
+             M230 260 L235 235"/>
+    <!-- Bottom lashes -->
+    <path d="M130 340 L125 365
+             M180 360 L180 385
+             M230 340 L235 365"/>
+  </g>
 </svg>
