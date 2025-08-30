@@ -1,15 +1,13 @@
-// Minimal coverflow carousel + flip + keep-out tray + overlay timing
+// Minimal coverflow carousel + wheel/swipe + flip + keep-out tray + overlay timing
 const OVERLAY_DELAY_IMAGE = 1200;
-const OVERLAY_DELAY_VIDEO = 1500;
 
 const state = {
-  deck: [],           // full deck from JSON
-  order: [],          // card ids in carousel order
-  center: 0,          // index currently centered
-  mode: "replace",    // "replace" | "no-replace"
-  drawn: new Set(),   // ids drawn (only used in no-replace)
+  deck: [],            // from JSON
+  order: [],           // array of indexes [0..n-1] in shuffled order
+  center: 0,           // which position is centered
+  mode: "replace",     // "replace" | "no-replace"
+  drawn: new Set(),    // indexes drawn (only for no-replace)
 };
-const track = document.querySelector('#carousel .carousel__track');
 
 const els = {
   carousel: document.getElementById('carousel'),
@@ -20,60 +18,72 @@ const els = {
   tpl: document.getElementById('cardTpl'),
 };
 
+const track = document.querySelector('#carousel .carousel__track');
+
 init();
 
 async function init(){
-  // load deck
   const res = await fetch('data/deck.json');
   state.deck = await res.json();
 
-  // first setup
   reshuffle();
   buildCarouselDOM();
   attachUI();
   updateCounter();
-  centerOn(0);
+  renderPositions();
 }
 
-// Smooth wheel navigation when the cursor is over the carousel
-els.carousel.addEventListener('wheel', (e)=>{
-  e.preventDefault(); // needed to stop page scroll; carousel has focus
-  const dy = e.deltaY;
-  if (Math.abs(dy) < 2) return;
-  centerOn(state.center + (dy > 0 ? 1 : -1));
-}, { passive:false });
+/* ---------- UI wiring ---------- */
 
 function attachUI(){
-  els.refresh.onclick = () => { reshuffle(); renderPositions(); clearTray(); };
+  els.refresh.onclick = () => { reshuffle(); buildCarouselDOM(); clearTray(); };
   els.modeToggle.onchange = () => {
     state.mode = els.modeToggle.checked ? "no-replace" : "replace";
     els.tray.hidden = state.mode !== "no-replace";
   };
-  // keyboard
+
+  // arrows via keyboard
   window.addEventListener('keydown', (e)=>{
     if (e.key === 'ArrowRight') centerOn(state.center + 1);
     if (e.key === 'ArrowLeft') centerOn(state.center - 1);
-    if (e.key.toLowerCase() === 'r') { reshuffle(); renderPositions(); clearTray(); }
+    if (e.key.toLowerCase() === 'r') { reshuffle(); buildCarouselDOM(); clearTray(); }
   });
+
+  // wheel scroll when hovering the deck
+  els.carousel.addEventListener('wheel', (e)=>{
+    e.preventDefault();
+    if (Math.abs(e.deltaY) < 2) return;
+    centerOn(state.center + (e.deltaY > 0 ? 1 : -1));
+  }, { passive:false });
 }
 
+/* ---------- deck helpers ---------- */
+
 function reshuffle(){
-  state.order = shuffle(state.deck.map(c=>c.id));
+  const n = state.deck.length;
+  state.order = shuffle(Array.from({length:n}, (_, i) => i));
   state.center = 0;
   state.drawn.clear();
 }
 
 function buildCarouselDOM(){
   track.innerHTML = '';
-  for (const id of state.order){
-    const cardData = getById(id);
-    const node = cardFromTpl(cardData);
-    node.dataset.id = id;
+  for (const idx of state.order){
+    const node = cardFromTpl(getCard(idx));
+    node.dataset.idx = String(idx);
     track.appendChild(node);
   }
   enableSwipe(track);
   renderPositions();
 }
+
+function getCard(idx){ return state.deck[idx]; }
+
+function updateCounter(){
+  els.counter.textContent = `${state.drawn.size}/${state.deck.length}`;
+}
+
+/* ---------- card template & flip ---------- */
 
 function cardFromTpl(card){
   const node = els.tpl.content.firstElementChild.cloneNode(true);
@@ -83,38 +93,34 @@ function cardFromTpl(card){
   const promptEl = node.querySelector('.overlay__prompt');
   const linkEl = node.querySelector('.overlay__link');
 
+  // content
   titleEl.textContent = card.title || '';
-  promptEl.textContent = card.prompt || '';
-  linkEl.href = card.link || '#';
-
-  if (card.type === 'video'){
-    front.dataset.type = 'video';
-    const vid = document.createElement('video');
-    vid.className = 'card__media';
-    vid.setAttribute('playsinline','');
-    vid.muted = true;
-    vid.preload = 'metadata';
-    if (card.poster) vid.poster = card.poster;
-    addSource(vid, card.src, 'video/mp4');
-    if (card.src_webm) addSource(vid, card.src_webm, 'video/webm');
-    front.prepend(vid);
+  if (promptEl) promptEl.textContent = ''; // you have titles only
+  if (card.link) {
+    linkEl.href = card.link;
   } else {
-    front.dataset.type = 'image';
-    const img = document.createElement('img');
-    img.className = 'card__media';
-    img.loading = 'lazy';
-    img.src = card.src;
-    img.alt = '';
-    front.prepend(img);
+    linkEl.remove(); // hide button if no link
   }
 
-  // flip handler
+  // image media
+  front.dataset.type = 'image';
+  const img = document.createElement('img');
+  img.className = 'card__media';
+  img.loading = 'lazy';
+  img.src = card.src;
+  img.alt = '';
+  front.prepend(img);
+
+  // click: center first; if already centered, flip
   node.addEventListener('click', (e)=>{
-    if (e.target.closest('.overlay__link')) return; // allow link
+    const cards = [...track.querySelectorAll('.card')];
+    const pos = cards.indexOf(node);
+    if (pos !== state.center) { centerOn(pos); return; }
+    if (e.target.closest('.overlay__link')) return;
     handleFlip(node);
   });
 
-  // accessibility
+  // keyboard flip when focused
   node.addEventListener('keydown', (e)=>{
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleFlip(node); }
   });
@@ -122,32 +128,21 @@ function cardFromTpl(card){
   return node;
 }
 
-function addSource(vid, src, type){
-  const s = document.createElement('source');
-  s.src = src; s.type = type;
-  vid.appendChild(s);
-}
-
-function getById(id){ return state.deck.find(c => c.id === id); }
-
 function handleFlip(cardEl){
-  const id = cardEl.dataset.id;
+  const idx = Number(cardEl.dataset.idx);
   const isFlipped = cardEl.classList.contains('card--flipped');
 
   if (!isFlipped){
-    // flip to front
     cardEl.classList.add('card--flipped');
     showOverlayWithDelay(cardEl);
 
-    // if no-replace, mark drawn + add to tray
-    if (state.mode === 'no-replace' && !state.drawn.has(id)){
-      state.drawn.add(id);
+    if (state.mode === 'no-replace' && !state.drawn.has(idx)){
+      state.drawn.add(idx);
       cardEl.classList.add('card--drawn');
-      addToTray(id);
+      addToTray(idx);
       updateCounter();
     }
   } else {
-    // flip back
     hideOverlay(cardEl);
     cardEl.classList.remove('card--flipped');
   }
@@ -155,24 +150,11 @@ function handleFlip(cardEl){
 
 function showOverlayWithDelay(cardEl){
   const overlay = cardEl.querySelector('.card__overlay');
-  const front = cardEl.querySelector('.card__face--front');
-  const media = front.querySelector('.card__media');
   overlay.classList.remove('show');
+  clearTimeout(cardEl._overlayTimer);
+  cardEl._overlayTimer = setTimeout(()=> overlay.classList.add('show'), OVERLAY_DELAY_IMAGE);
 
-  const delay = front.dataset.type === 'video' ? OVERLAY_DELAY_VIDEO : OVERLAY_DELAY_IMAGE;
-
-  // For video: show after first play or delay fallback
-  if (front.dataset.type === 'video' && media instanceof HTMLVideoElement){
-    const onFirstPlay = () => { overlay.classList.add('show'); media.removeEventListener('play', onFirstPlay); };
-    media.addEventListener('play', onFirstPlay, { once:true });
-    cardEl._overlayTimer && clearTimeout(cardEl._overlayTimer);
-    cardEl._overlayTimer = setTimeout(()=>overlay.classList.add('show'), delay);
-  } else {
-    cardEl._overlayTimer && clearTimeout(cardEl._overlayTimer);
-    cardEl._overlayTimer = setTimeout(()=>overlay.classList.add('show'), delay);
-  }
-
-  // tap front to toggle overlay
+  const front = cardEl.querySelector('.card__face--front');
   front.onclick = (e)=>{ if (!e.target.closest('.overlay__link')) overlay.classList.toggle('show'); };
 }
 
@@ -182,51 +164,39 @@ function hideOverlay(cardEl){
   overlay.classList.remove('show');
 }
 
-function addToTray(id){
+function addToTray(idx){
   els.tray.hidden = false;
-  const data = getById(id);
-  const node = cardFromTpl(data);
-  node.classList.add('card--flipped'); // show front
-  // make clicking a tray card recenter carousel on it
+  const node = cardFromTpl(getCard(idx));
+  node.classList.add('card--flipped'); // show front in tray
   node.onclick = () => {
-    const idx = state.order.indexOf(id);
-    centerOn(idx);
-    // also flip the main card if not flipped already
-    const mainCard = findCardDOM(id);
-    if (mainCard && !mainCard.classList.contains('card--flipped')) handleFlip(mainCard);
+    const pos = state.order.indexOf(idx);
+    centerOn(pos);
+    const main = findCardDOM(idx);
+    if (main && !main.classList.contains('card--flipped')) handleFlip(main);
   };
   els.tray.appendChild(node);
 }
 
-function clearTray(){ els.tray.innerHTML=''; els.tray.hidden = state.mode !== 'no-replace'; updateCounter(); }
-
-function updateCounter(){
-  const total = state.deck.length;
-  const drawn = state.drawn.size;
-  els.counter.textContent = `${drawn}/${total}`;
+function findCardDOM(idx){
+  return track.querySelector(`.card[data-idx="${idx}"]`);
 }
 
-function findCardDOM(id){
-  return els.carousel.querySelector(`.card[data-id="${id}"]`);
-}
-
-/* ---------- coverflow positioning & drag ---------- */
+/* ---------- layout (5 visible slots) ---------- */
 
 function renderPositions(){
   const nodes = [...track.querySelectorAll('.card')];
   nodes.forEach((node, i)=>{
-    const delta = i - state.center;     // negative = left, positive = right
+    const delta = i - state.center;        // left negative, right positive
     const abs = Math.abs(delta);
 
-    // Only show 2 on each side of center = max 5 visible
-    const outside = abs > 2;
-    node.classList.toggle('is-outside', outside);
+    // show at most 2 on each side → up to 5 visible
+    node.classList.toggle('is-outside', abs > 2);
 
-    // Spacing & size: center big, sides smaller
-    const x = delta * 140;              // px shift between slots
-    const rot = delta * -18;            // Y tilt
-    const z  = -abs * 80;               // push back
-    const scaleMap = [1.00, 0.86, 0.72]; // [center, 1-away, 2-away]
+    // spacing & size
+    const x = delta * 140;                 // px between slots
+    const rot = delta * -18;               // Y tilt
+    const z  = -abs * 80;                  // depth
+    const scaleMap = [1.00, 0.86, 0.72];   // center, 1-away, 2-away
     const scale = scaleMap[Math.min(abs, 2)];
 
     node.style.transform =
@@ -238,7 +208,6 @@ function renderPositions(){
   });
 }
 
-
 function centerOn(index){
   const max = state.order.length - 1;
   const next = clamp(index, 0, max);
@@ -247,13 +216,13 @@ function centerOn(index){
   renderPositions();
 }
 
-function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+/* ---------- swipe/drag ---------- */
 
 function enableSwipe(surface){
-  let dragging = false, startX = 0, startCenter = 0, moved = 0, pid = 0;
+  let dragging = false, startX = 0, startCenter = 0, pid = 0;
 
   surface.addEventListener('pointerdown', (e)=>{
-    dragging = true; moved = 0;
+    dragging = true;
     startX = e.clientX;
     startCenter = state.center;
     pid = e.pointerId;
@@ -263,8 +232,7 @@ function enableSwipe(surface){
   surface.addEventListener('pointermove', (e)=>{
     if (!dragging) return;
     const dx = e.clientX - startX;
-    moved = Math.max(moved, Math.abs(dx));
-    const sensitivity = 1/140;                 // px per index, matches spacing
+    const sensitivity = 1/140;                       // px per index
     const target = Math.round(startCenter - dx * sensitivity);
     if (target !== state.center) centerOn(target);
   });
@@ -275,18 +243,18 @@ function enableSwipe(surface){
     surface.releasePointerCapture?.(pid);
   });
 
-  // Prevent iOS pull-to-refresh inside the deck
+  // stop iOS pull-to-refresh inside the deck
   surface.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, { passive:false });
 }
 
+/* ---------- utils ---------- */
 
-function shuffle(arr){
-  const a = arr.slice();
-  for (let i=a.length-1;i>0;i--){
+function shuffle(a){
+  const arr = a.slice();
+  for (let i=arr.length-1; i>0; i--){
     const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  return a;
+  return arr;
 }
-
 function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
