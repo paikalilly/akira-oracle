@@ -74,6 +74,22 @@ function buildCarouselDOM(){
     track.appendChild(node);
   }
   enableSwipe(track);
+  // Fallback: if a click slips past pointer events, treat it as a tap
+  els.carousel.onclick = (e)=>{
+    if (e.target.closest('.overlay__link')) return;
+    const hit = document.elementFromPoint(e.clientX, e.clientY);
+    const el = hit && hit.closest ? hit.closest('.card') : null;
+    if (!el) return;
+    const cards = [...track.querySelectorAll('.card')];
+    const pos = cards.indexOf(el);
+    if (pos !== state.center) {
+      centerOn(pos);
+      requestAnimationFrame(()=> requestAnimationFrame(()=> handleFlip(el)));
+    } else {
+      handleFlip(el);
+    }
+  };
+
   renderPositions();
 }
 
@@ -250,27 +266,26 @@ function enableSwipe(surface){
     if (!dragging) return;
     dragging = false;
 
-    // Treat tiny movement as a tap
+    // Treat tiny movement as a tap; find the actual card under the pointer
     if (moved < 6) {
-      const el = e.target.closest('.card');
+      const hit = document.elementFromPoint(e.clientX, e.clientY);
+      const el = hit && hit.closest ? hit.closest('.card') : null;
       if (el) {
         const cards = [...track.querySelectorAll('.card')];
         const pos = cards.indexOf(el);
         if (pos !== state.center) {
           centerOn(pos);
-          // flip after recenter paints
           requestAnimationFrame(()=> requestAnimationFrame(()=> handleFlip(el)));
         } else {
           handleFlip(el);
         }
       }
     }
-  });
+  }, { passive: true });
 
   // Prevent iOS pull-to-refresh inside the deck
   surface.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, { passive:false });
 }
-
 
 /* ---------- utils ---------- */
 
