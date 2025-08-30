@@ -11,10 +11,7 @@ const state = {
 
 const els = {
   carousel: document.getElementById('carousel'),
-  tray: document.getElementById('tray'),
-  counter: document.getElementById('counter'),
   refresh: document.getElementById('refreshBtn'),
-  modeToggle: document.getElementById('modeToggle'),
   tpl: document.getElementById('cardTpl'),
 };
 
@@ -29,7 +26,6 @@ async function init(){
   reshuffle();
   buildCarouselDOM();
   attachUI();
-  updateCounter();
   renderPositions();
 }
 
@@ -95,9 +91,6 @@ function buildCarouselDOM(){
 
 function getCard(idx){ return state.deck[idx]; }
 
-function updateCounter(){
-  els.counter.textContent = `${state.drawn.size}/${state.deck.length}`;
-}
 
 /* ---------- card template & flip ---------- */
 
