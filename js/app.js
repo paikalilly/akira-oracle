@@ -171,6 +171,11 @@ function hideOverlay(cardEl){
 
 /* ---------- layout (5 visible slots) ---------- */
 
+function centerOn(pos){
+  state.center = clamp(pos, 0, state.order.length - 1);
+  renderPositions();
+}
+
 function renderPositions(){
   const nodes = [...track.querySelectorAll('.card')];
   nodes.forEach((node, i)=>{
