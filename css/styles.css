@@ -59,3 +59,14 @@ main { display:grid; gap:10px; padding:10px; }
 @media (prefers-reduced-motion: reduce) {
   .card__overlay, .overlay__text { transition:none; }
 }
+
+/* Flip animation (front shows the image; back is the pattern) */
+.card__face {
+  transition: transform .5s ease; /* animate the flip */
+}
+.card__face--back { transform: rotateY(0); }
+.card__face--front { transform: rotateY(180deg); }
+
+/* When flipped: hide back, show front */
+.card.card--flipped .card__face--back { transform: rotateY(-180deg); }
+.card.card--flipped .card__face--front { transform: rotateY(0); }
