@@ -133,7 +133,10 @@ function handleFlip(cardEl){
   const isFlipped = cardEl.classList.contains('card--flipped');
 
   if (!isFlipped){
-    cardEl.classList.add('card--flipped');
+    // force a layout read to ensure the next transform is committed
+    void cardEl.offsetWidth;
+
+    cardEl.classList.add('card--flipped');   // triggers the flip
     showOverlayWithDelay(cardEl);
 
     if (state.mode === 'no-replace' && !state.drawn.has(idx)){
