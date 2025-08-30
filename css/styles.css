@@ -62,28 +62,38 @@ main { display:grid; gap:10px; padding:10px; }
 /* Media */
 .card__media { width:100%; height:100%; object-fit:cover; display:block; }
 
-/* Overlay (fade-in gradient + text) */
+/* Overlay centered with soft vignette */
 .card__overlay {
   position:absolute; inset:0;
-  background: linear-gradient(to top, rgba(0,0,0,.68) 22%, rgba(0,0,0,0) 58%);
-  display:flex; align-items:flex-end;
+  /* subtle vignette so mid-card text reads over bright images */
+  background:
+    radial-gradient(ellipse at center, rgba(0,0,0,.55) 0%, rgba(0,0,0,.35) 35%, rgba(0,0,0,.1) 60%, rgba(0,0,0,0) 80%);
+  display:flex; align-items:center; justify-content:center;
   opacity:0; pointer-events:none; transition: opacity .35s ease;
 }
 .card__overlay.show { opacity:1; pointer-events:auto; }
-.overlay__text { color:#fff; width:100%; padding:18px; transform: translateY(8px); transition: transform .35s ease; }
+
+.overlay__text {
+  color:#fff; width:86%; max-width:28rem;
+  text-align:center;
+  font-family: "Cormorant Garamond", serif;
+  font-weight:600; letter-spacing:.2px;
+  line-height:1.2;
+  text-shadow: 0 2px 8px rgba(0,0,0,.6);
+  transform: translateY(6px); transition: transform .35s ease;
+}
 .card__overlay.show .overlay__text { transform: translateY(0); }
-.overlay__title { margin:0 0 4px; font: 600 1.05rem/1.2 system-ui, sans-serif; }
-.overlay__prompt { margin:0 0 10px; font: 400 .95rem/1.35 system-ui, sans-serif; }
-.overlay__link { color:#fff; text-decoration:underline; }
 
-/* Drawn badge */
-.card__badge { position:absolute; top:8px; left:8px; font-size:.7rem; background:rgba(0,0,0,.65); color:#fff; padding:2px 6px; border-radius:8px; opacity:0; transition:.25s; }
-.card--drawn .card__badge { opacity:1; }
+.overlay__title { margin:0; font-size:1.35rem; }
+.overlay__prompt { display:none; } /* you’re not using prompts */
+.overlay__link {
+  display:inline-block; margin-top:.6rem;
+  color:#fff; text-decoration:underline; font-weight:500;
+}
+@media (min-width: 480px){
+  .overlay__title { font-size:1.55rem; }
+}
 
-/* Tray (mini fronts always show overlay for legibility) */
-.tray { display:flex; gap:10px; overflow-x:auto; padding:8px 6px; border-top:1px solid #222; }
-.tray .card { position:relative; left:auto; top:auto; transform:none; width:96px; }
-.tray .card .card__overlay { opacity:1; pointer-events:auto; }
 
 /* Motion accessibility */
 @media (prefers-reduced-motion: reduce) {
