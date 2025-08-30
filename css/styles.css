@@ -79,3 +79,21 @@ main { display:grid; gap:10px; padding:10px; }
   .card__overlay,
   .overlay__text { transition: none !important; }
 }
+
+/* Ensure correct 3D painting order across browsers */
+.card { transform-style: preserve-3d; perspective: 1200px; }
+
+/* Hide backfaces everywhere, including the <img> */
+.card__face, .card__media { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+
+/* Put the front face slightly in front to avoid z-fighting */
+.card__face--front { transform: rotateY(180deg) translateZ(1px); }
+
+/* The flip uses the inner wrapper; keep it 3D */
+.card__inner { transform-style: preserve-3d; transition: transform .6s ease; }
+.card.card--flipped .card__inner { transform: rotateY(180deg); }
+
+/* (Optional) Safari/WebKit quirk guard */
+@supports (-webkit-hyphens: none) {
+  .card__face, .card__media { -webkit-backface-visibility: hidden; }
+}
