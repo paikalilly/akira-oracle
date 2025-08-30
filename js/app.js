@@ -229,33 +229,48 @@ function centerOn(index){
 /* ---------- swipe/drag ---------- */
 
 function enableSwipe(surface){
-  let dragging = false, startX = 0, startCenter = 0, pid = 0;
+  let dragging = false, startX = 0, startCenter = 0, moved = 0;
 
   surface.addEventListener('pointerdown', (e)=>{
     dragging = true;
+    moved = 0;
     startX = e.clientX;
     startCenter = state.center;
-    pid = e.pointerId;
-    surface.setPointerCapture(pid);
   });
 
   surface.addEventListener('pointermove', (e)=>{
     if (!dragging) return;
     const dx = e.clientX - startX;
-    const sensitivity = 1/140;                       // px per index
-    const target = Math.round(startCenter - dx * sensitivity);
+    moved = Math.max(moved, Math.abs(dx));
+    const target = Math.round(startCenter - dx / 140); // 140px per slot
     if (target !== state.center) centerOn(target);
   });
 
-  surface.addEventListener('pointerup', ()=>{
+  surface.addEventListener('pointerup', (e)=>{
     if (!dragging) return;
     dragging = false;
-    surface.releasePointerCapture?.(pid);
+
+    // Treat tiny movement as a tap
+    if (moved < 6) {
+      const el = e.target.closest('.card');
+      if (el) {
+        const cards = [...track.querySelectorAll('.card')];
+        const pos = cards.indexOf(el);
+        if (pos !== state.center) {
+          centerOn(pos);
+          // flip after recenter paints
+          requestAnimationFrame(()=> requestAnimationFrame(()=> handleFlip(el)));
+        } else {
+          handleFlip(el);
+        }
+      }
+    }
   });
 
-  // stop iOS pull-to-refresh inside the deck
+  // Prevent iOS pull-to-refresh inside the deck
   surface.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, { passive:false });
 }
+
 
 /* ---------- utils ---------- */
 
