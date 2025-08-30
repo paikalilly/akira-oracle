@@ -9,6 +9,7 @@ const state = {
   mode: "replace",    // "replace" | "no-replace"
   drawn: new Set(),   // ids drawn (only used in no-replace)
 };
+const track = document.querySelector('#carousel .carousel__track');
 
 const els = {
   carousel: document.getElementById('carousel'),
@@ -34,6 +35,14 @@ async function init(){
   centerOn(0);
 }
 
+// Smooth wheel navigation when the cursor is over the carousel
+els.carousel.addEventListener('wheel', (e)=>{
+  e.preventDefault(); // needed to stop page scroll; carousel has focus
+  const dy = e.deltaY;
+  if (Math.abs(dy) < 2) return;
+  centerOn(state.center + (dy > 0 ? 1 : -1));
+}, { passive:false });
+
 function attachUI(){
   els.refresh.onclick = () => { reshuffle(); renderPositions(); clearTray(); };
   els.modeToggle.onchange = () => {
@@ -55,15 +64,6 @@ function reshuffle(){
 }
 
 function buildCarouselDOM(){
-  // container track
-  let track = els.carousel.querySelector('.carousel__track');
-  if (!track){
-    track = document.createElement('div');
-    track.className = 'carousel__track';
-    els.carousel.appendChild(track);
-    enableDrag(track);
-  }
-  // create card DOM for all items (positioned with transforms)
   track.innerHTML = '';
   for (const id of state.order){
     const cardData = getById(id);
@@ -71,6 +71,7 @@ function buildCarouselDOM(){
     node.dataset.id = id;
     track.appendChild(node);
   }
+  enableSwipe(track);
   renderPositions();
 }
 
@@ -212,41 +213,72 @@ function findCardDOM(id){
 /* ---------- coverflow positioning & drag ---------- */
 
 function renderPositions(){
-  const nodes = [...els.carousel.querySelectorAll('.card')];
+  const nodes = [...track.querySelectorAll('.card')];
   nodes.forEach((node, i)=>{
-    const delta = i - state.center;
-    const offset = clamp(delta, -5, 5); // limit transforms
-    const x = offset * 110;             // px shift
-    const rot = offset * -20;           // deg
-    const z = -Math.abs(offset) * 60;   // depth
-    node.style.transform = `translate3d(calc(-50% + ${x}px), -50%, ${z}px) rotateY(${rot}deg)`;
-    node.style.zIndex = String(100 - Math.abs(offset));
-    node.tabIndex = (i === state.center) ? 0 : -1;
+    const delta = i - state.center;     // negative = left, positive = right
+    const abs = Math.abs(delta);
 
-    // badge if drawn
-    const id = state.order[i];
-    node.classList.toggle('card--drawn', state.drawn.has(id));
+    // Only show 2 on each side of center = max 5 visible
+    const outside = abs > 2;
+    node.classList.toggle('is-outside', outside);
+
+    // Spacing & size: center big, sides smaller
+    const x = delta * 140;              // px shift between slots
+    const rot = delta * -18;            // Y tilt
+    const z  = -abs * 80;               // push back
+    const scaleMap = [1.00, 0.86, 0.72]; // [center, 1-away, 2-away]
+    const scale = scaleMap[Math.min(abs, 2)];
+
+    node.style.transform =
+      `translate3d(calc(-50% + ${x}px), -50%, ${z}px) rotateY(${rot}deg) scale(${scale})`;
+
+    node.style.zIndex = String(100 - abs);
+    node.classList.toggle('is-center', delta === 0);
+    node.tabIndex = (delta === 0) ? 0 : -1;
   });
 }
+
 
 function centerOn(index){
   const max = state.order.length - 1;
-  state.center = clamp(index, 0, max);
+  const next = clamp(index, 0, max);
+  if (next === state.center) return;
+  state.center = next;
   renderPositions();
 }
 
-function enableDrag(track){
-  let dragging = false, startX = 0, startCenter = 0;
-  track.addEventListener('pointerdown', (e)=>{ dragging = true; startX = e.clientX; startCenter = state.center; track.setPointerCapture(e.pointerId); });
-  track.addEventListener('pointermove', (e)=>{
+function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+function enableSwipe(surface){
+  let dragging = false, startX = 0, startCenter = 0, moved = 0, pid = 0;
+
+  surface.addEventListener('pointerdown', (e)=>{
+    dragging = true; moved = 0;
+    startX = e.clientX;
+    startCenter = state.center;
+    pid = e.pointerId;
+    surface.setPointerCapture(pid);
+  });
+
+  surface.addEventListener('pointermove', (e)=>{
     if (!dragging) return;
     const dx = e.clientX - startX;
-    const sensitivity = 1/110; // pixels per index
+    moved = Math.max(moved, Math.abs(dx));
+    const sensitivity = 1/140;                 // px per index, matches spacing
     const target = Math.round(startCenter - dx * sensitivity);
     if (target !== state.center) centerOn(target);
   });
-  window.addEventListener('pointerup', ()=> dragging = false);
+
+  surface.addEventListener('pointerup', ()=>{
+    if (!dragging) return;
+    dragging = false;
+    surface.releasePointerCapture?.(pid);
+  });
+
+  // Prevent iOS pull-to-refresh inside the deck
+  surface.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, { passive:false });
 }
+
 
 function shuffle(arr){
   const a = arr.slice();
