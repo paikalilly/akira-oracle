@@ -15,6 +15,13 @@ const els = {
 
 const track = document.querySelector('#carousel .carousel__track');
 
+const IS_PHONE = window.matchMedia('(max-width: 480px)').matches;
+const SLOT = IS_PHONE ? 90 : 140;   // px between slots
+const MAX_SIDE = 2;                 // show 2 each side of center (5 total)
+const HIDE_BEYOND = 3;              // hard-hide beyond ±3 (7 in DOM paint)
+const OVERLAY_DELAY_IMAGE = IS_PHONE ? 700 : 1200;
+
+
 init();
 
 async function init(){
@@ -179,17 +186,19 @@ function centerOn(pos){
 function renderPositions(){
   const nodes = [...track.querySelectorAll('.card')];
   nodes.forEach((node, i)=>{
-    const delta = i - state.center;        // left negative, right positive
+    const delta = i - state.center;
     const abs = Math.abs(delta);
 
-    // show at most 2 on each side → up to 5 visible
-    node.classList.toggle('is-outside', abs > 2);
+    // Hard-hide far nodes to save Safari's GPU
+    node.style.display = abs > HIDE_BEYOND ? 'none' : 'block';
 
-    // spacing & size
-    const x = delta * 140;                 // px between slots
-    const rot = delta * -18;               // Y tilt
-    const z  = -abs * 80;                  // depth
-    const scaleMap = [1.00, 0.86, 0.72];   // center, 1-away, 2-away
+    // Show up to 2 on each side (5 visible)
+    node.classList.toggle('is-outside', abs > MAX_SIDE);
+
+    const x = delta * SLOT;
+    const rot = delta * -18;
+    const z  = -abs * 80;
+    const scaleMap = [1.00, 0.86, 0.72];
     const scale = scaleMap[Math.min(abs, 2)];
 
     node.style.transform =
@@ -200,6 +209,7 @@ function renderPositions(){
     node.tabIndex = (delta === 0) ? 0 : -1;
   });
 }
+
 
 /* ---------- swipe/drag ---------- */
 
@@ -217,7 +227,8 @@ function enableSwipe(surface){
     if (!dragging) return;
     const dx = e.clientX - startX;
     moved = Math.max(moved, Math.abs(dx));
-    const target = Math.round(startCenter - dx / 140); // 140px per slot
+    if (moved < 2) return;                       // tiny jitter = still a tap
+    const target = Math.round(startCenter - dx / SLOT);
     if (target !== state.center) centerOn(target);
   });
 
@@ -225,11 +236,11 @@ function enableSwipe(surface){
     if (!dragging) return;
     dragging = false;
 
-    // let real link clicks through
+    // let real links through
     const linkHit = document.elementFromPoint(e.clientX, e.clientY)?.closest('.overlay__link');
     if (linkHit) return;
 
-    // Treat tiny movement as a tap; find the actual card under the pointer
+    // Tap: very small movement → treat as a click
     if (moved < 6) {
       const hit = document.elementFromPoint(e.clientX, e.clientY);
       const el = hit && hit.closest ? hit.closest('.card') : null;
@@ -246,9 +257,10 @@ function enableSwipe(surface){
     }
   }, { passive: true });
 
-  // Prevent iOS pull-to-refresh inside the deck
+  // iOS pull-to-refresh guard only inside the deck
   surface.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, { passive:false });
 }
+
 
 /* ---------- utils ---------- */
 
