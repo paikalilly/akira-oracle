@@ -113,18 +113,17 @@ function cardFromTpl(card){
 
   // click: center first; if already centered, flip
   node.addEventListener('click', (e)=>{
-    if (e.target.closest('.overlay__link')) return;
-
     const cards = [...track.querySelectorAll('.card')];
     const pos = cards.indexOf(node);
 
     if (pos !== state.center) {
       centerOn(pos);
-    // flip on the next frame (after the recenter transform applies)
-      requestAnimationFrame(()=> requestAnimationFrame(()=> handleFlip(node)));
       return;
     }
-    handleFlip(node);
+
+    if (node.classList.contains('is-center') && !e.target.closest('.overlay_link')) {
+      handleFlip(node);
+    }
   });
 
 
